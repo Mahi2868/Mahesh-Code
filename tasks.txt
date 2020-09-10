@@ -1,0 +1,405 @@
+Task0:
+- Connect to mongodb using commandline
+- List datatabses
+- How to switch between different daatabases (use database)
+- List collections
+- Create commands for crud operations: https://docs.mongodb.com/manual/crud/
+- aggregate: https://docs.mongodb.com/manual/reference/method/db.collection.aggregate/#db.collection.aggregate
+- mongodb sort, limit, project, lookup
+Task1:
+- Create node application using npm init
+- Connect to Mongodb
+- Create Collection with students details
+- Create end points for get/post/put/delete
+- POST: Create/Insert document in Mongodb collection
+- POST: Create/Insert multiple document in Mongodb collecction
+- GET: get all the documents from the collection
+- GET: Get specific document from the collection
+- PUT: Update document - 
+ 	- Only Update specific field(name/name&age/name&age&address).
+- DELETE: delete document / delete multiple documents
+
+Task2: 
+- Create node application using express generator
+- Connect to Mongodb
+- Create Collection with emplyees details
+- Create end points for get/post/put/delete
+- POST: Create/Insert document in Mongodb collection
+- POST: Create/Insert multiple document in Mongodb collecction
+- GET: get all the documents from the collection
+- GET: Get specific document from the collection
+- PUT: Update document - 
+ 	- Only Update specific field(name/name&age/name&age&address).
+- DELETE: delete document / delete multiple documents
+
+=====================================================================================
+- Get data using maltiple filter values/change response data studentname/ remove _id
+
+- Diff between get and post ?
+
+Ans:Both GET and POST method is used to transfer data from client to server in HTTP protocol but Main         difference between POST and GET method is that GET carries request parameter appended in URL string while       POST carries request parameter in message body which makes it more secure way of transferring data from         client to server in http protocol.
+
+-->GET is used to request data from a specified resource.
+-->GET requests can be cached
+-->GET requests remain in the browser history
+-->GET requests can be bookmarked
+-->GET requests should never be used when dealing with sensitive data
+-->GET requests have length restrictions
+-->GET requests are only used to request data (not modify)
+
+-->POST is used to send data to a server to create/update a resource.
+-->POST requests are never cached
+-->POST requests do not remain in the browser history
+-->POST requests cannot be bookmarked
+-->POST requests have no restrictions on data length
+
+
+- Diff between post and put?
+
+Ans: Use PUT when you want to modify a singular resource which is already a part of resources collection. PUT      replaces the resource in its entirety. Use PATCH if request updates part of the resource. Use POST when      you want to add a child resource under resources collection.
+     The difference between POST and PUT is that PUT requests are idempotent. That is, calling the same PUT      request multiple times will always produce the same result. In contrast, calling a POST request repeatedly      have side effects of creating the same resource multiple times.
+
+- Diff between put and patch?
+
+Ans:- HTTP PUT method only allows a complete replacement of a document. HTTP resource. A PATCH request on the       other hand, is used to make changes to part of the resource at a location. That is, it PATCHES the       resource or add new resource also.
+
+
+- Mongodb save()
+---------------
+db.collection.save()
+Updates an existing document or inserts a new document, depending on its document parameter.
+
+db.collection.save(
+   <document>,
+   {
+     writeConcern: <document>
+   }
+)
+The save() method uses either the insert or the update command, which use the default write concern. To specify a different write concern, include the write concern in the options parameter.
+
+Insert:
+If the document does not contain an _id field, then the save() method calls the insert() method. During the operation, the mongo shell will create an ObjectId and assign it to the _id field.
+
+
+Update:
+If the document contains an _id field, then the save() method is equivalent to an update with the upsert option set to true and the query predicate on the _id field.
+
+Examples
+Save a New Document without Specifying an _id Field:
+---------------------------------------------------
+In the following example, save() method performs an insert since the document passed to the method does not contain the _id field:
+
+db.products.save( { item: "book", qty: 40 } )
+
+During the insert, the shell will create the _id field with a unique ObjectId value, as verified by the inserted document:
+
+{ "_id" : ObjectId("50691737d386d8fadbd6b01d"), "item" : "book", "qty" : 40 }
+
+The ObjectId values are specific to the machine and time when the operation is run. As such, your values may differ from those in the example.
+
+Save a New Document Specifying an _id Field:
+-------------------------------------------
+In the following example, save() performs an update with upsert:true since the document contains an _id field:
+
+db.products.save( { _id: 100, item: "water", qty: 30 } )
+
+Because the _id field holds a value that does not exist in the collection, the update operation results in an insertion of the document. The results of these operations are identical to an update() method with the upsert option set to true.
+
+The operation results in the following new document in the products collection:
+
+{ "_id" : 100, "item" : "water", "qty" : 30 }
+
+Replace an Existing Document:
+---------------------------
+The products collection contains the following document:
+
+{ "_id" : 100, "item" : "water", "qty" : 30 }
+
+The save() method performs an update with upsert:true since the document contains an _id field:
+
+db.products.save( { _id : 100, item : "juice" } )
+
+Because the _id field holds a value that exists in the collection, the operation performs an update to replace the document and results in the following document:
+
+{ "_id" : 100, "item" : "juice" }
+
+Override Default Write Concern:
+------------------------------
+The following operation to a replica set specifies a write concern of "w: majority" with a wtimeout of 5000 milliseconds such that the method returns after the write propagates to a majority of the voting replica set members or the method times out after 5 seconds.
+
+Changed in version 3.0: In previous versions, majority referred to the majority of all members of the replica set instead of the majority of the voting members.
+
+db.products.save(
+    { item: "envelopes", qty : 100, type: "Clasp" },
+    { writeConcern: { w: "majority", wtimeout: 5000 } }
+)
+
+Save vs Update :
+---------------
+update modifies an existing document matched with your query params. If there is no such matching document, that's when upsert comes in picture.
+
+upsert : false : Nothing happens when no such document exist
+upsert : true : New doc gets created with contents equal to query params and update params
+save : Doesn't allow any query-params. if _id exists and there is a matching doc with the same _id, it replaces it. When no _id specified/no matching document, it inserts the document as a new one.
+
+- Mongodb upsert & multi
+-------------------------
+MongoDB Update Method Parameters:
+
+db.collection.update(
+   <query>,
+   <update>,
+   {
+     upsert: <boolean>,
+     multi: <boolean>,
+     writeConcern: <document>,
+     collation: <document>,
+     arrayFilters: [ <filterdocument1>, ... ]
+   }
+)
+
+Argument	   Type	        Detials
+query	          document	The query parameter tells us which part of the document in a collection to be                                 updated.
+
+update	          document	The update parameter in MongoDB helps in deciding which modification has to be                                 applied in a MongoDB document.
+
+upsert	          boolean	The mongoDB upsert is an optional parameter of update() method in MongoDB. If                                   this parameter is set to true, It’ll create a new MongoDB document when the                                     query doesn’t match in a document. It is set to false by default.
+
+multi	          boolean	The mongoDB multi is an optional parameter of MongoDB update() method. If this                                 parameter is set to true, then It’ll update the multiple documents when meeting                                 the query selection. The default value of this parameter is false. If this                                      argument is set to false then it will update the single document.
+
+writeConcern	 document	The writeConcern in mongoDB is an optional parameter, and this parameter is all                                 about expressing the write concern of a document.
+
+collation	 nt	        The collation in mongoDB is an optional parameter, and this parameter allows                                    users to define language-specific rules for making the string comparision.
+
+
+
+- Mongodb Indexing:
+------------------
+
+An index in MongoDB is a special data structure that holds the data of few fields of documents on which the index is created. Indexes improve the speed of search operations in database because instead of searching the whole document, the search is performed on the indexes that holds only few fields. On the other hand, having too many indexes can hamper the performance of insert, update and delete operations because of the additional write and additional data space used by indexes.
+
+create index in MongoDB:
+-----------------------
+Syntax:
+
+db.collection_name.createIndex({field_name: 1 or -1})
+
+The value 1 is for ascending order and -1 is for descending order.
+
+Ex:
+ db.studentData.getIndexes()
+[ { "v" : 2, "key" : { "_id" : 1 }, "name" : "_id_" } ]
+
+> db.studentData.createIndex({rollNo : 1})
+{
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 1,
+        "numIndexesAfter" : 2,
+        "ok" : 1
+}
+
+index creation options:
+---------------------
+
+-->create index in the background. other operations will not be blocked.
+
+   {background : true}
+Ex: db.studentData.createIndex({name : 1}, {background : true})
+
+-->create unique index:
+----------------------
+   {unique : true}
+
+Ex: db.studentData.createIndex({name : 1}, {unique : true})
+
+-->specify name for the index:
+-----------------------------
+    {name : "indexName"}
+Ex: db.studentData.createIndex({rollNo : 1}, {name : "Roll Number"})
+    {
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 1,
+        "numIndexesAfter" : 2,
+        "ok" : 1
+   }
+
+TTL indexes:
+------------
+
+TTL indexes are special single-field indexes that MongoDB can use to automatically remove documents from a collection after a certain amount of time or at a specific clock time. Data expiration is useful for certain types of information like machine generated event data, logs, and session information that only need to persist in a database for a finite amount of time.
+
+Ex:
+db.eventlog.createIndex( { "lastModifiedDate": 1 }, { expireAfterSeconds: 3600 } )
+
+When the TTL thread is active, you will see delete operations in the output of db.currentOp() or in the data collected by the database profiler.
+
+Sparse Indexes:
+---------------
+The sparse property of an index ensures that the index only contain entries for documents that have the indexed field. The index skips documents that do not have the indexed field.
+
+You can combine the sparse index option with the unique index option to prevent inserting documents that have duplicate values for the indexed field(s) and skip indexing documents that lack the indexed field(s).
+
+Ex:
+> db.studentData.createIndex({rollNo : 1}, {sparse : true})
+
+Sparse Index On A Collection Cannot Return Complete Results:
+------------------------------------------------------------
+Consider a collection scores that contains the following documents:
+
+{ "_id" : ObjectId("523b6e32fb408eea0eec2647"), "userid" : "newbie" }
+{ "_id" : ObjectId("523b6e61fb408eea0eec2648"), "userid" : "abby", "score" : 82 }
+{ "_id" : ObjectId("523b6e6ffb408eea0eec2649"), "userid" : "nina", "score" : 90 }
+
+The collection has a sparse index on the field score:
+
+db.scores.createIndex( { score: 1 } , { sparse: true } )
+
+Because the document for the userid "newbie" does not contain the score field, the sparse index does not contain an entry for that document.
+
+Consider the following query to return all documents in the scores collection, sorted by the score field:
+
+db.scores.find().sort( { score: -1 } )
+
+Even though the sort is by the indexed field, MongoDB will not select the sparse index to fulfill the query in order to return complete results:
+
+{ "_id" : ObjectId("523b6e6ffb408eea0eec2649"), "userid" : "nina", "score" : 90 }
+{ "_id" : ObjectId("523b6e61fb408eea0eec2648"), "userid" : "abby", "score" : 82 }
+{ "_id" : ObjectId("523b6e32fb408eea0eec2647"), "userid" : "newbie" }
+To use the sparse index, explicitly specify the index with hint():
+
+db.scores.find().sort( { score: -1 } ).hint( { score: 1 } )
+The use of the index results in the return of only those documents with the score field:
+
+{ "_id" : ObjectId("523b6e6ffb408eea0eec2649"), "userid" : "nina", "score" : 90 }
+{ "_id" : ObjectId("523b6e61fb408eea0eec2648"), "userid" : "abby", "score" : 82 }
+
+-->Create a partial index:
+-------------------------
+Partial indexes only index the documents in a collection that meet a specified filter expression. By indexing a subset of the documents in a collection, partial indexes have lower storage requirements and reduced performance costs for index creation and maintenance.
+
+Ex:
+db.studentData.createIndex({rollNo : 1}, {partialFilterExpression: {gender : "Female"}})
+{
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 1,
+        "numIndexesAfter" : 2,
+        "ok" : 1
+}
+
+
+Finding the indexes in a collection:
+-----------------------------------
+We can use getIndexes() method to find all the indexes created on a collection. The syntax for this method is:
+
+Syntax:
+db.collection_name.getIndexes()
+
+
+Ex:
+db.studentData.getIndexes()
+[
+        {
+                "v" : 2,
+                "key" : {
+                        "_id" : 1
+                },
+                "name" : "_id_"
+        },
+        {
+                "v" : 2,
+                "key" : {
+                        "rollNo" : 1
+                },
+                "name" : "rollNo_1"
+        }
+]
+
+Drop indexes in a collection:
+----------------------------
+Dropping a specific index:
+--------------------------
+For this purpose the dropIndex() method is used.
+
+Syntax:
+db.collection_name.dropIndex({index_name: 1})
+
+Ex:
+db.studentData.dropIndex({name : 1})
+{ "nIndexesWas" : 3, "ok" : 1 }
+
+Dropping all the indexes:
+------------------------
+To drop all the indexes of a collection, we use dropIndexes() method.
+
+Syntax:
+db.collection_name.dropIndexes()
+Ex:
+ db.studentData.dropIndexes()
+{
+        "nIndexesWas" : 2,
+        "msg" : "non-_id indexes dropped for collection",
+        "ok" : 1
+}
+
+Analyze query performance:
+-------------------------
+
+Return information about the queries.
+db.collectionName.explain().<method>
+db.collectionName.explain("executionStats").<method>
+
+query Performance with index:
+Ex:  db.studentData.find({rollNo : 1}).explain()
+
+Ex: db.studentData.find({rollNo : 1}).explain("executionStats")
+
+query Performance without index:
+Ex:  db.studentData.find({gender : 1}).explain()
+
+Ex: db.studentData.find({gender : 1}).explain("executionStats")
+
+executionStats with RegExp:
+
+Ex: db.studentdata.find({name : /m/i}).explain("executionStats")
+
+
+- students: 
+[{
+	"name": "xyz",
+	"section": "A",
+	"subject": "maths",
+	"marks": 95
+},
+{
+	"name": "abc",
+	"section": "A",
+	"subject": "maths",
+	"marks": 65
+},
+{
+	"name": "abc",
+	"section": "B",
+	"subject": "telugu",
+	"marks": 75
+}]
+
+T1: Top 10 students.
+T2: Get No of students passed for each subject.
+T3: Get No of students passed for each section and subject.
+T4: Get List of students passed for each section and subject.
+T5: Write example api for lookup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
