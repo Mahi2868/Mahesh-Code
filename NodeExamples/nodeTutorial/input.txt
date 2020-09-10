@@ -1,0 +1,3 @@
+node.js is a cross platform runtime environment and library 
+to run javascript applications, which is used to create networking and 
+server side applications.
